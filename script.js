@@ -10,9 +10,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const isAdminPage = paginaAtual === "admin-lista.html";
     const listaSolicitacoes = document.getElementById("lista-solicitacoes");
     const listaProfessores = document.getElementById("lista-professores");
-    const professorSelect = document.getElementById("professor");
     let softwares = JSON.parse(localStorage.getItem("softwares")) || [];
     const professores = JSON.parse(localStorage.getItem("professores")) || [];
+    const professorSelect = document.getElementById("professor");
 
     atualizarLista(); //atualiza a lista que mostra os professores cadastrados
 
@@ -193,6 +193,8 @@ document.addEventListener("DOMContentLoaded", () => {
             professorForm.reset();
         });
 
+        
+
         // Exibir lista de softwares na página admin-lista.html
         const listaAdmin = document.getElementById("lista-softwares");
         if (listaAdmin) {
@@ -232,16 +234,42 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
     }
-
-    //Selecionar professor
-    if (professorSelect) {
-    professores.forEach((prof) => {
-        const option = document.createElement("option");
-        option.value = prof.nome;
-        option.text = prof.nome;
-        professorSelect.add(option);
-    });
-}
+        // eleciona o elemento select
+        const professorSelect = document.getElementById("professor");
+    
+        // se o select de professor for encontrado
+        if (professorSelect) {
+            // Recupera os professores do localStorage 
+            const professores = JSON.parse(localStorage.getItem("professores")) || [];
+    
+            // Limpa o conteúdo do select antes de adicionar as opções
+            professorSelect.innerHTML = '';
+    
+            // Verifica se há professores no localStorage
+            if (professores.length > 0) {
+                // Cria uma opção vazia no começo, para que o usuário tenha a chance de selecionar "Nenhum"
+                const optionDefault = document.createElement("option");
+                optionDefault.value = "";
+                professorSelect.appendChild(optionDefault);
+    
+                // Para cada professor, cria uma nova opção no select
+                professores.forEach((prof) => {
+                    const option = document.createElement("option");
+                    option.value = prof.nome;  // O valor da opção será o nome do professor
+                    option.textContent = prof.nome;  // O texto visível será o nome do professor
+                    professorSelect.appendChild(option);  // Adiciona a opção ao select
+                });
+            } else {
+                // Caso não haja professores, adicione uma opção informando ao usuário
+                const optionDefault = document.createElement("option");
+                optionDefault.value = "";
+                optionDefault.textContent = "Nenhum professor cadastrado";
+                professorSelect.appendChild(optionDefault);
+            }
+        } else {
+            console.error('O select de professor não foi encontrado.');
+        }
+    
 
     // Preenche o select de software (sem duplicar)
 if (softwareSelect) {
