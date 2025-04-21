@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratório</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js"></script>
+</head>
+<body>
+
+    <header>
+        <h1>Laboratório</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="professor-solicitacoes.html">Solicitações</a></li>
+                <li><a href="professor-laboratorio.html">Laboratório</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="form-section">
+            <h2>Softwares Disponíveis</h2>
+            <ul id="lista-softwares">
+                <!-- Exemplo de lista de softwares com checkbox para confirmação de uso -->
+                <li>
+                    <input type="checkbox" id="software1" name="software1">
+                    <label for="software1">Software 1 - Versão 1.0</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="software2" name="software2">
+                    <label for="software2">Software 2 - Versão 2.3</label>
+                </li>
+                <!-- Adicione outros softwares conforme necessário -->
+            </ul>
+        </section>
+        
+        <!-- Formulário de Solicitação -->
+        <section class="form-section">
+            <h2>Solicitar Instalação</h2>
+            <form id="solicitacao-form">
+                <label for="laboratorio">Laboratório:</label>
+                <input type="text" id="laboratorio" required>
+        
+                <label for="data">Data de Início de Uso:</label>
+                <input type="date" id="data" required>
+        
+                <button type="submit">Solicitar Instalação</button>
+                <p id="mensagem-solicitacao"></p>
+            </form>
+        </section>
+
+        <!-- Formulário de Confirmação de Uso -->
+        <section class="form-section">
+            <h2>Confirmar Uso dos Softwares</h2>
+            <form id="confirmacao-form">
+                <p>Selecione os softwares que você utilizou:</p>
+                <ul>
+                    <li>
+                        <input type="checkbox" id="confirmar-software" name="confirmar-software">
+                    </li>
+                </ul>
+                
+                <label for="problemas">Se houveram problemas durante o uso, descreva-os abaixo:</label>
+                <textarea id="problemas" name="problemas" rows="4" cols="50" placeholder="Descreva os problemas encontrados, se houveram."></textarea>
+                
+                <button type="submit">Confirmar Uso</button>
+            </form>
+            <p id="mensagem-confirmacao"></p>
+        </section>
+        
+    </main>
+</body>
+</html>

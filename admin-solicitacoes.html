@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitações</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+
+    <header>
+        <h1>Solicitações</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="admin-cadastro.html">Cadastrar Software</a></li>
+                <li><a href="admin-solicitacoes.html">Solicitações</a></li>
+                <li><a href="cadastroprofessor.html">Cadastrar Professor</a></li>
+                <li><a href="admin-lista.html">Lista de Softwares</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="form-section">
+            <h2>Solicitações de Softwares</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Professor</th>
+                        <th>Software</th>
+                        <th>Laboratório</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody id="lista-solicitacoes">
+                    <!-- As solicitações aparecerão aqui -->
+                </tbody>
+            </table>
+            <div id="botoes-acoes">
+                <button onclick="aprovarSelecionado()">Aprovar</button>
+                <button onclick="editarSelecionado()">Alterar</button>
+                <button onclick="excluirSelecionado()">Excluir</button>
+            </div>
+        </section>
+    </main>
+
+</body>
+</html>
