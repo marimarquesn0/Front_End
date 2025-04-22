@@ -43,7 +43,6 @@ document.addEventListener("DOMContentLoaded", () => {
         
     }
     
-
     // preenche o select de software na solicitação
     if (softwareSelect) {
         softwareSelect.innerHTML = softwares.map(s => `<option value="${s.nome}">${s.nome}</option>`).join("");
@@ -51,23 +50,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // mostra softwares disponíveis na lista
     if (lista) {
-    const softwaresDisponiveis = softwares.filter(s => s.disponivel !== false);
-    lista.innerHTML = '';
-
-    // botões de editar, excluir e marcar indisponível APENAS na página de admin
-    softwaresDisponiveis.forEach((soft, index) => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-            <strong>${soft.nome}</strong> — Versão: ${soft.versao} — Tipo: ${soft.tipo}
-            ${isAdminPage ? `
-                <button onclick="window.location.href='admin-cadastro.html?editar=${index}'">Editar</button>
-                <button class="excluir" data-index="${index}">Excluir</button>
-                <button class="indisponivel" data-index="${index}">Indisponível</button>` : ''}`;
-        lista.appendChild(li);
-        
-    });
+        const softwaresDisponiveis = softwares.filter(s => s.disponivel !== false);
+        lista.innerHTML = '';
     
-}
+        // Botões de editar, excluir e marcar indisponível APENAS na página de admin
+        softwaresDisponiveis.forEach((soft, index) => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <strong>${soft.nome}</strong> — Versão: ${soft.versao} — Tipo: ${soft.tipo}
+                ${isAdminPage ? `
+                    <button onclick="window.location.href='admin-cadastro.html?editar=${index}'">Editar</button>
+                    <button class="excluir" data-index="${index}">Excluir</button>
+                    <button class="indisponivel" data-index="${index}">Indisponível</button>` : ''}`;
+            lista.appendChild(li);
+        });
+    }
+    
 
 
     // cadastro e edição de software
@@ -270,17 +268,18 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     
 
-    // preenche o select de software (sem duplicar)
-if (softwareSelect) {
-    softwareSelect.innerHTML = ""; // evita duplicações
-
-    softwares.forEach((soft) => {
-        const option = document.createElement("option");
-        option.value = soft.nome;
-        option.text = soft.nome;
-        softwareSelect.add(option);
-    });
-}
+    // Preenche o select de software sem duplicar
+    if (softwareSelect) {
+        softwareSelect.innerHTML = ""; // Limpa para evitar duplicações
+    
+        softwares.forEach((soft) => {
+            const option = document.createElement("option");
+            option.value = soft.nome;
+            option.text = soft.nome;
+            softwareSelect.add(option);
+        });
+    }
+    
     // exibir lista de professores na página admin-lista.html
 
     if (listaProfessores) {
@@ -342,36 +341,19 @@ function excluirSoftware(index) {
         localStorage.setItem("softwares", JSON.stringify(softwares));
         location.reload();
     }
-
-    //softwares usados
-    // Pegamos o elemento UL onde vamos colocar os checkboxes
-    const listaSoftwares = document.getElementById("confirmar-softwares");
-    // Filtramos os softwares disponíveis (disponivel !== false)
-    const softwaresDisponiveis = softwares.filter(soft => soft.disponivel !== false);
-    // Preenchemos a lista com os checkboxes
-    if (listaSoftwares) {
-        // Para cada software disponível, criamos um checkbox e um label
-        softwaresDisponiveis.forEach((soft, index) => {
-            const li = document.createElement('li'); // Cria um item de lista <li>
-            li.innerHTML = `
-                <input type="checkbox" id="software-${index}" name="software" value="${soft.nome}">
-                <label for="software-${index}">${soft.nome} - Versão ${soft.versao}</label>
-            `;
-            listaSoftwares.appendChild(li); // Adiciona o item à lista
-        });
-    }
-
-    
+        //codigo da pagina de laboratorio pra selecionar
         
 }
 
 // área de login
 function acessarComo(perfil) {
     if (perfil === 'professor') {
-        window.location.href = 'professor-login.html';
+        window.location.href = 'professor.html';
     } else if (perfil === 'admin') {
-        window.location.href = 'admin-login.html';
+        window.location.href = 'admin.html';
     }
+
+    
     
 }
 
