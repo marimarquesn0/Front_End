@@ -6,35 +6,35 @@ document.addEventListener("DOMContentLoaded", () => {
     const professorForm = document.getElementById("professor-form");
     const softwareSelect = document.getElementById("software");
     const lista = document.getElementById("lista-softwares");
-    const paginaAtual = window.location.pathname.split("/").pop(); // pega só o nome do arquivo
+    const paginaAtual = window.location.pathname.split("/").pop(); // pega só o nome do arquivo 
     const isAdminPage = paginaAtual === "admin-lista.html";
     const listaSolicitacoes = document.getElementById("lista-solicitacoes");
     const listaProfessores = document.getElementById("lista-professores");
     let softwares = JSON.parse(localStorage.getItem("softwares")) || [];
+    let solicitacoes = JSON.parse(localStorage.getItem("solicitacoes")) || [];
     const professores = JSON.parse(localStorage.getItem("professores")) || [];
-    const professorSelect = document.getElementById("professor");
 
     atualizarLista(); //atualiza a lista que mostra os professores cadastrados
 
-    //permite excluir o software desejado
+    //permite excluir, editar ou marcar como indisponivel o software desejado
     
     if (lista) {
         lista.addEventListener("click", (e) => {
             const target = e.target;
     
-            // Botão de excluir
+            // botão de excluir
             if (target.classList.contains("excluir")) {
                 const index = parseInt(target.dataset.index);
                 excluirSoftware(index);
             }
     
-            // Botão de editar
+            // botão de editar
             if (target.classList.contains("editar")) {
                 const index = parseInt(target.dataset.index);
                 window.location.href = `admin-cadastro.html?editar=${index}`;
             }
     
-            // Botão de indisponível
+            // botão de indisponível
             if (target.classList.contains("indisponivel")) {
                 const index = parseInt(target.dataset.index);
                 marcarIndisponivel(index);
@@ -44,17 +44,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
 
-    // Preenche o select de software na solicitação
+    // preenche o select de software na solicitação
     if (softwareSelect) {
         softwareSelect.innerHTML = softwares.map(s => `<option value="${s.nome}">${s.nome}</option>`).join("");
     }
 
-    // Mostra softwares disponíveis na lista
+    // mostra softwares disponíveis na lista
     if (lista) {
     const softwaresDisponiveis = softwares.filter(s => s.disponivel !== false);
     lista.innerHTML = '';
 
-    // Botões de editar, excluir e marcar indisponível apenas na página de admin
+    // botões de editar, excluir e marcar indisponível APENAS na página de admin
     softwaresDisponiveis.forEach((soft, index) => {
         const li = document.createElement('li');
         li.innerHTML = `
@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
 }
 
 
-    // Cadastro e edição de Software
+    // cadastro e edição de software
     if (softwareForm) {
         softwareForm.addEventListener("submit", (e) => {
             e.preventDefault();
@@ -85,11 +85,11 @@ document.addEventListener("DOMContentLoaded", () => {
             const novoSoftware = { nome, link, versao, tipo, data, disponivel: true };
 
             if (indexEdicao === "") {
-                // Novo cadastro
+                // novo cadastro
                 softwares.push(novoSoftware);
                 document.getElementById("mensagem").innerText = "Software cadastrado com sucesso!";
             } else {
-                // Atualização de software
+                // atualização de software
                 softwares[indexEdicao] = novoSoftware;
                 document.getElementById("mensagem").innerText = "Software atualizado com sucesso!";
                 document.getElementById("index-edicao").value = "";
@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
             softwareForm.reset();
         });
 
-        // Verifica se a página tem parâmetro ?editar e preenche o formulário
+        // verifica se a página tem parâmetro para editar e preenche o formulário
         const params = new URLSearchParams(window.location.search);
         if (params.has("editar")) {
             const index = params.get("editar");
@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-    // Solicitação de instalação
+    // solicitação de instalação
     if (solicitacaoForm) {
         solicitacaoForm.addEventListener("submit", (e) => {
             e.preventDefault();
@@ -136,13 +136,13 @@ document.addEventListener("DOMContentLoaded", () => {
     
             const novaSolicitacao = { professor, software, laboratorio, data };
     
-            // Recupera solicitações anteriores (ou array vazio)
+            // recupera solicitações anteriores (ou array vazio)
             const solicitacoes = JSON.parse(localStorage.getItem("solicitacoes")) || [];
     
-            // Adiciona a nova
+            // adiciona a nova
             solicitacoes.push(novaSolicitacao);
     
-            // Salva de volta
+            // salva de volta
             localStorage.setItem("solicitacoes", JSON.stringify(solicitacoes));
     
             console.log("Solicitação registrada:", novaSolicitacao);
@@ -152,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
 
-    // Cadastro de Professor
+    // cadastro de Professor
     if (professorForm) {
         professorForm.addEventListener("submit", (e) => {
             e.preventDefault();
@@ -169,13 +169,13 @@ document.addEventListener("DOMContentLoaded", () => {
             }
     
             if (indiceEdicaoProfessor !== null) {
-                // Atualizar professor existente
+                // atualizar professor existente
                 professores[indiceEdicaoProfessor] = { nome, escola };
-                indiceEdicaoProfessor = null; // Reseta o índice
+                indiceEdicaoProfessor = null; // reseta o índice
                 mensagem.innerText = "Professor atualizado com sucesso!";
                 document.querySelector("#professor-form button[type='submit']").textContent = "Cadastrar";
             } else {
-                // Novo cadastro
+                // novo cadastro
                 professores.push({ nome, escola });
                 mensagem.innerText = "Professor cadastrado com sucesso!";
             }
@@ -183,7 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
             localStorage.setItem("professores", JSON.stringify(professores));
             professorForm.reset();
     
-            atualizarLista(); // Função para atualizar visualmente a lista
+            atualizarLista(); // função para atualizar
         });
     }
             professores.push({ nome, escola });
@@ -195,7 +195,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         
 
-        // Exibir lista de softwares na página admin-lista.html
+        // exibir lista de softwares na página admin-lista.html
         const listaAdmin = document.getElementById("lista-softwares");
         if (listaAdmin) {
             listaAdmin.innerHTML = '';
@@ -234,44 +234,43 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
     }
-        // eleciona o elemento select
+        // seleciona o elemento select
         const professorSelect = document.getElementById("professor");
     
         // se o select de professor for encontrado
         if (professorSelect) {
-            // Recupera os professores do localStorage 
+            // recupera os professores do localStorage 
             const professores = JSON.parse(localStorage.getItem("professores")) || [];
     
-            // Limpa o conteúdo do select antes de adicionar as opções
+            // limpa o conteúdo do select antes de adicionar as opções
             professorSelect.innerHTML = '';
     
-            // Verifica se há professores no localStorage
+            // verifica se há professores no localStorage
             if (professores.length > 0) {
-                // Cria uma opção vazia no começo, para que o usuário tenha a chance de selecionar "Nenhum"
                 const optionDefault = document.createElement("option");
                 optionDefault.value = "";
                 professorSelect.appendChild(optionDefault);
     
-                // Para cada professor, cria uma nova opção no select
+                // para cada professor, cria uma nova opção no select
                 professores.forEach((prof) => {
                     const option = document.createElement("option");
-                    option.value = prof.nome;  // O valor da opção será o nome do professor
-                    option.textContent = prof.nome;  // O texto visível será o nome do professor
-                    professorSelect.appendChild(option);  // Adiciona a opção ao select
+                    option.value = prof.nome;  // o valor da opção será o nome do professor
+                    option.textContent = prof.nome;  // o texto visível será o nome do professor
+                    professorSelect.appendChild(option);  // adiciona a opção ao select
                 });
             } else {
-                // Caso não haja professores, adicione uma opção informando ao usuário
+                // caso não haja professores, adicione uma opção informando ao usuário
                 const optionDefault = document.createElement("option");
                 optionDefault.value = "";
                 optionDefault.textContent = "Nenhum professor cadastrado";
                 professorSelect.appendChild(optionDefault);
             }
         } else {
-            console.error('O select de professor não foi encontrado.');
+            console.error('O professor não foi encontrado.');
         }
     
 
-    // Preenche o select de software (sem duplicar)
+    // preenche o select de software (sem duplicar)
 if (softwareSelect) {
     softwareSelect.innerHTML = ""; // evita duplicações
 
@@ -282,7 +281,7 @@ if (softwareSelect) {
         softwareSelect.add(option);
     });
 }
-    // Exibir lista de professores na página admin-lista.html
+    // exibir lista de professores na página admin-lista.html
 
     if (listaProfessores) {
         listaProfessores.innerHTML = '';
@@ -301,7 +300,7 @@ function excluirProfessor(index) {
     const professores = JSON.parse(localStorage.getItem("professores")) || [];
     professores.splice(index, 1);
     localStorage.setItem("professores", JSON.stringify(professores));
-    location.reload(); // Recarrega para atualizar a lista
+    location.reload(); // recarrega para atualizar a lista
 }
 
 function editarProfessor(index) {
@@ -311,10 +310,10 @@ function editarProfessor(index) {
     document.getElementById("nome-prof").value = prof.nome;
     document.getElementById("escola").value = prof.escola;
 
-    // Define o índice que está sendo editado
+    // define o índice que está sendo editado
     indiceEdicaoProfessor = index;
 
-    // Atualiza o texto do botão para "Atualizar"
+    // atualiza o texto do botão para "Atualizar"
     document.querySelector("#professor-form button[type='submit']").textContent = "Atualizar";
 }
 //lista professores cadastrados
@@ -343,13 +342,36 @@ function excluirSoftware(index) {
         localStorage.setItem("softwares", JSON.stringify(softwares));
         location.reload();
     }
+
+    //softwares usados
+    // Pegamos o elemento UL onde vamos colocar os checkboxes
+    const listaSoftwares = document.getElementById("confirmar-softwares");
+    // Filtramos os softwares disponíveis (disponivel !== false)
+    const softwaresDisponiveis = softwares.filter(soft => soft.disponivel !== false);
+    // Preenchemos a lista com os checkboxes
+    if (listaSoftwares) {
+        // Para cada software disponível, criamos um checkbox e um label
+        softwaresDisponiveis.forEach((soft, index) => {
+            const li = document.createElement('li'); // Cria um item de lista <li>
+            li.innerHTML = `
+                <input type="checkbox" id="software-${index}" name="software" value="${soft.nome}">
+                <label for="software-${index}">${soft.nome} - Versão ${soft.versao}</label>
+            `;
+            listaSoftwares.appendChild(li); // Adiciona o item à lista
+        });
+    }
+
+    
+        
 }
 
-// Área de login
+// área de login
 function acessarComo(perfil) {
     if (perfil === 'professor') {
-        window.location.href = 'professor.html';
+        window.location.href = 'professor-login.html';
     } else if (perfil === 'admin') {
-        window.location.href = 'admin.html';
+        window.location.href = 'admin-login.html';
     }
+    
 }
+

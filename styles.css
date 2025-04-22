@@ -145,5 +145,53 @@ th {
     border-radius: 4px;
     cursor: pointer;
 }
+.login-form {
+    background-color: #fff;
+    padding: 20px;
+    width: 300px; /* Ajusta a largura do formulário */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 50px auto; /* Centraliza o formulário na página */
+}
+
+.login-form h2 {
+    margin-bottom: 20px;
+    font-size: 20px;
+    text-align: center;
+}
+
+form label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+    font-size: 14px; /* Ajusta o tamanho da fonte dos labels */
+}
+
+form input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 14px; /* Ajusta o tamanho da fonte do input */
+}
+
+form button {
+    width: 100%;
+    padding: 10px;
+    background-color: #2c3e50;
+    color: white;
+    border: none;
+    margin-top: 15px;
+    cursor: pointer;
+    font-size: 14px; /* Ajusta o tamanho da fonte do botão */
+    border-radius: 4px;
+}
+
+form button:hover {
+    background-color: #1a252f;
+}
+
 
 

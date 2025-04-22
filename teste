@@ -1,0 +1,252 @@
+// Variáveis globais
+const lista = document.getElementById("lista-softwares");
+const paginaAtual = window.location.pathname.split("/").pop(); // pega só o nome do arquivo
+const isAdminPage = paginaAtual === "admin-lista.html";
+let softwares = JSON.parse(localStorage.getItem("softwares")) || [];
+
+atualizarLista(); // Atualiza a lista de professores cadastrados
+
+// Exibe lista de softwares na página admin-lista.html
+if (lista) {
+    lista.addEventListener("click", (e) => {
+        const target = e.target;
+
+        // Botão de excluir
+        if (target.classList.contains("excluir")) {
+            const index = parseInt(target.dataset.index);
+            excluirSoftware(index);
+        }
+
+        // Botão de editar
+        if (target.classList.contains("editar")) {
+            const index = parseInt(target.dataset.index);
+            window.location.href = `admin-cadastro.html?editar=${index}`;
+        }
+
+        // Botão de indisponível
+        if (target.classList.contains("indisponivel")) {
+            const index = parseInt(target.dataset.index);
+            marcarIndisponivel(index);
+        }
+    });
+
+    const softwaresDisponiveis = softwares.filter(s => s.disponivel !== false);
+    lista.innerHTML = '';
+
+    // Exibe os softwares disponíveis e seus botões de ação
+    softwaresDisponiveis.forEach((soft, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <strong>${soft.nome}</strong> — Versão: ${soft.versao} — Tipo: ${soft.tipo}
+            ${isAdminPage ? `
+                <button onclick="window.location.href='admin-cadastro.html?editar=${index}'">Editar</button>
+                <button class="excluir" data-index="${index}">Excluir</button>
+                <button class="indisponivel" data-index="${index}">Indisponível</button>` : ''}`;
+        lista.appendChild(li);
+    });
+}
+
+// Funções relacionadas aos softwares
+function excluirSoftware(index) {
+    const softwares = JSON.parse(localStorage.getItem("softwares")) || [];
+
+    if (confirm("Tem certeza que deseja excluir este software?")) {
+        softwares.splice(index, 1);
+        localStorage.setItem("softwares", JSON.stringify(softwares));
+        location.reload();
+    }
+}
+
+function marcarIndisponivel(index) {
+    const softwares = JSON.parse(localStorage.getItem("softwares")) || [];
+    softwares[index].disponivel = false;
+    localStorage.setItem("softwares", JSON.stringify(softwares));
+    location.reload();
+}
+
+// Cadastro e edição de Software
+const softwareForm = document.getElementById("software-form");
+
+if (softwareForm) {
+    softwareForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const nome = document.getElementById("nome").value;
+        const link = document.getElementById("link").value;
+        const versao = document.getElementById("versao").value;
+        const tipo = document.getElementById("tipo").value;
+        const data = document.getElementById("data").value;
+        const indexEdicao = document.getElementById("index-edicao").value;
+
+        const novoSoftware = { nome, link, versao, tipo, data, disponivel: true };
+        let softwares = JSON.parse(localStorage.getItem("softwares")) || [];
+
+        if (indexEdicao === "") {
+            // Novo cadastro
+            softwares.push(novoSoftware);
+            document.getElementById("mensagem").innerText = "Software cadastrado com sucesso!";
+        } else {
+            // Atualização de software
+            softwares[indexEdicao] = novoSoftware;
+            document.getElementById("mensagem").innerText = "Software atualizado com sucesso!";
+            document.getElementById("index-edicao").value = "";
+            document.querySelector("button[type='submit']").textContent = "Cadastrar";
+        }
+
+        localStorage.setItem("softwares", JSON.stringify(softwares));
+        softwareForm.reset();
+    });
+
+    // Verifica se a página tem parâmetro ?editar e preenche o formulário
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("editar")) {
+        const index = params.get("editar");
+        const software = softwares[index];
+
+        if (software) {
+            document.getElementById("nome").value = software.nome;
+            document.getElementById("link").value = software.link;
+            document.getElementById("versao").value = software.versao;
+            document.getElementById("tipo").value = software.tipo;
+            document.getElementById("data").value = software.data;
+            document.getElementById("index-edicao").value = index;
+
+            const botao = document.querySelector("#software-form button[type='submit']");
+            if (botao) {
+                botao.textContent = "Atualizar";
+            }
+        }
+    }
+}
+
+// Cadastro e edição de Professor
+let indiceEdicaoProfessor = null;
+const professorForm = document.getElementById("professor-form");
+
+if (professorForm) {
+    professorForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const nome = document.getElementById("nome-prof").value.trim();
+        const escola = document.getElementById("escola").value.trim();
+        const mensagem = document.getElementById("mensagem-professor");
+        let professores = JSON.parse(localStorage.getItem("professores")) || [];
+
+        if (!nome || !escola) {
+            mensagem.innerText = "Preencha todos os campos.";
+            mensagem.style.color = "red";
+            return;
+        }
+
+        if (indiceEdicaoProfessor !== null) {
+            // Atualizar professor existente
+            professores[indiceEdicaoProfessor] = { nome, escola };
+            indiceEdicaoProfessor = null; // Reseta o índice
+            mensagem.innerText = "Professor atualizado com sucesso!";
+            document.querySelector("#professor-form button[type='submit']").textContent = "Cadastrar";
+        } else {
+            // Novo cadastro
+            professores.push({ nome, escola });
+            mensagem.innerText = "Professor cadastrado com sucesso!";
+        }
+
+        localStorage.setItem("professores", JSON.stringify(professores));
+        professorForm.reset();
+        atualizarLista(); // Atualiza a lista visual
+    });
+}
+
+// Funções para editar e excluir professor
+function editarProfessor(index) {
+    const professores = JSON.parse(localStorage.getItem("professores")) || [];
+    const prof = professores[index];
+
+    document.getElementById("nome-prof").value = prof.nome;
+    document.getElementById("escola").value = prof.escola;
+
+    // Define o índice que está sendo editado
+    indiceEdicaoProfessor = index;
+    document.querySelector("#professor-form button[type='submit']").textContent = "Atualizar";
+}
+
+function excluirProfessor(index) {
+    const professores = JSON.parse(localStorage.getItem("professores")) || [];
+    professores.splice(index, 1);
+    localStorage.setItem("professores", JSON.stringify(professores));
+    location.reload();
+}
+
+// Função para atualizar a lista de professores na página
+function atualizarLista() {
+    const listaProfessores = document.getElementById("lista-professores");
+    const professores = JSON.parse(localStorage.getItem("professores")) || [];
+
+    if (!listaProfessores) return;
+
+    listaProfessores.innerHTML = '';
+    professores.forEach((prof, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+            ${prof.nome} — Escola: ${prof.escola}
+            <button onclick="editarProfessor(${index})">Editar</button>
+            <button onclick="excluirProfessor(${index})">Excluir</button>
+        `;
+        listaProfessores.appendChild(li);
+    });
+}
+
+// Solicitação de instalação
+const solicitacaoForm = document.getElementById("solicitacao-form");
+
+if (solicitacaoForm) {
+    solicitacaoForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const professor = document.getElementById("professor").value;
+        const software = document.getElementById("software").value;
+        const laboratorio = document.getElementById("laboratorio").value;
+        const data = document.getElementById("data").value;
+
+        const novaSolicitacao = { professor, software, laboratorio, data };
+        let solicitacoes = JSON.parse(localStorage.getItem("solicitacoes")) || [];
+
+        solicitacoes.push(novaSolicitacao);
+        localStorage.setItem("solicitacoes", JSON.stringify(solicitacoes));
+
+        document.getElementById("mensagem-solicitacao").innerText = "Solicitação registrada com sucesso!";
+        solicitacaoForm.reset();
+    });
+}
+
+// Exibir solicitações na tabela
+const listaSolicitacoes = document.getElementById("lista-solicitacoes");
+
+if (listaSolicitacoes) {
+    const solicitacoes = JSON.parse(localStorage.getItem("solicitacoes")) || [];
+    
+    if (solicitacoes.length === 0) {
+        const linha = document.createElement("tr");
+        linha.innerHTML = "<td colspan='4'>Nenhuma solicitação encontrada.</td>";
+        listaSolicitacoes.appendChild(linha);
+    } else {
+        solicitacoes.forEach(solicitacao => {
+            const linha = document.createElement("tr");
+            linha.innerHTML = `
+                <td>${solicitacao.professor || 'N/A'}</td>
+                <td>${solicitacao.software}</td>
+                <td>${solicitacao.laboratorio}</td>
+                <td>${solicitacao.data}</td>
+            `;
+            listaSolicitacoes.appendChild(linha);
+        });
+    }
+}
+
+// Área de login
+function acessarComo(perfil) {
+    if (perfil === 'professor') {
+        window.location.href = 'professor.html';
+    } else if (perfil === 'admin') {
+        window.location.href = 'admin.html';
+    }
+}

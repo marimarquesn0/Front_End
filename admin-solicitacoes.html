@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solicitações</title>
+    <title>Lista de Solicitações</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="script.js" defer></script>
 </head>
 <body>
 
     <header>
-        <h1>Solicitações</h1>
+        <h1>Controle de Instalação de Software</h1>
         <nav>
             <ul>
                 <li><a href="index.html">Home</a></li>
@@ -25,26 +24,22 @@
     <main>
         <section class="form-section">
             <h2>Solicitações de Softwares</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Professor</th>
-                        <th>Software</th>
-                        <th>Laboratório</th>
-                        <th>Data</th>
-                    </tr>
-                </thead>
-                <tbody id="lista-solicitacoes">
-                    <!-- As solicitações aparecerão aqui -->
-                </tbody>
-            </table>
-            <div id="botoes-acoes">
-                <button onclick="aprovarSelecionado()">Aprovar</button>
-                <button onclick="editarSelecionado()">Alterar</button>
-                <button onclick="excluirSelecionado()">Excluir</button>
+
+            <div id="cabecalho-solicitacoes">
+                <div><strong>Selecionar</strong></div>
+                <div><strong>Professor</strong></div>
+                <div><strong>Software</strong></div>
+                <div><strong>Laboratório</strong></div>
+                <div><strong>Data</strong></div>
             </div>
+            
+            <div id="lista-solicitacoes">
+                <!-- Conteúdo gerado dinamicamente -->
+            </div>
+            
         </section>
     </main>
 
+    <script src="script.js"></script>
 </body>
 </html>
