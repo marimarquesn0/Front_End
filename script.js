@@ -16,78 +16,93 @@ document.addEventListener("DOMContentLoaded", () => {
 
     atualizarLista(); //atualiza a lista que mostra os professores cadastrados
 
-    //permite excluir, editar ou marcar como indisponivel o software desejado
-    
-    if (lista) {
-        lista.addEventListener("click", (e) => {
-            const target = e.target;
 
-            // botão de excluir
-            if (target.classList.contains("excluir")) {
-                const index = parseInt(target.dataset.index);
-                excluirSoftware(index);
-            }
-
-            // botão de editar
-            if (target.classList.contains("editar")) {
-                const index = parseInt(target.dataset.index);
-                window.location.href = `admin-cadastro.html?editar=${index}`;
-            }
-
-            // botão de indisponível
-            if (target.classList.contains("indisponivel")) {
-                const index = parseInt(target.dataset.index);
-                marcarIndisponivel(index);
-            }
-        });
-
-    }
-
-    // preenche o select de software na solicitação
-    if (softwareSelect) {
+     // preenche o select de software na solicitação
+     if (softwareSelect) {
         softwareSelect.innerHTML = softwares.map(s => `<option value="${s.nome}">${s.nome}</option>`).join("");
     }
 
-    // mostra softwares disponíveis na lista
-    if (lista) {
-        const softwaresDisponiveis = softwares.filter(s => !s.indisponivel); //
-        lista.innerHTML = '';
+    //permite excluir, editar ou marcar como indisponivel o software desejado
+ // Função para renderizar a lista de softwares
+function renderizarListaSoftwares() {
+    if (!listaAdmin) return;
 
-        // Botões de editar, excluir e marcar indisponível APENAS na página de admin
-        softwaresDisponiveis.forEach((soft, index) => {
-            if (soft.indisponivel) return;//só mostra os disponíveis 
-            const li = document.createElement('li');
-            li.innerHTML = `
-                <strong>${soft.nome}</strong> — Versão: ${soft.versao} — Tipo: ${soft.tipo}
-                ${isAdminPage ? `
-                    <button onclick="window.location.href='admin-cadastro.html?editar=${index}'">Editar</button>
-                    <button class="excluir" data-index="${index}">Excluir</button>
-                    <button class="indisponivel" data-index="${index}">Indisponível</button>` : ''}`;
-            lista.appendChild(li);
-        });
+    listaAdmin.innerHTML = '';
+    const softwares = JSON.parse(localStorage.getItem("softwares")) || [];
+
+    softwares.forEach((soft, index) => {
+        const li = document.createElement("li");
         
-        function marcarIndisponivel(index) {
-            const software = softwares[index];
-            software.indisponivel = !software.indisponivel; //altera o estado
+        // Verifica se está na página admin-lista.html antes de mostrar os botões
+        const isAdminPage = window.location.pathname.includes("admin-lista.html");
         
-            // Atualiza o localStorage com o array completo
-            localStorage.setItem("softwares", JSON.stringify(softwares));
-        
-            //atualiza o botão 
-            const botao = document.querySelector(`.indisponivel[data-index="${index}"]`);
-            
-            if (software.indisponivel) {
-                botao.textContent = "Disponível"; //muda para disponivel
-                botao.dataset.status = "indisponivel";
-                botao.style.backgroundColor = "#ffcccc"; //muda a cor do texto
-            } else {
-                botao.textContent = "Indisponível";//muda para indisponivel 
-                botao.dataset.status = "disponivel";
-                botao.style.backgroundColor = ""; //volta ao estilo original(sem a cor vermelha)
+        li.innerHTML = `
+            <strong>${soft.nome}</strong> — Versão: ${soft.versao} — Tipo: ${soft.tipo} — Data: ${soft.data}
+            ${isAdminPage ? `
+                <button class="editar" data-index="${index}">Editar</button>
+                <button class="excluir" data-index="${index}">Excluir</button>
+                <button class="indisponivel" data-index="${index}">
+                    ${soft.indisponivel ? "Disponível" : "Indisponível"}
+                </button>
+            ` : ''}
+        `;
+
+        // Aplica estilo apenas se o botão existir (página admin)
+        if (isAdminPage) {
+            const botaoIndisponivel = li.querySelector(".indisponivel");
+            if (soft.indisponivel) {
+                botaoIndisponivel.style.backgroundColor = "#ffcccc"; // vermelho claro
             }
         }
-        
+
+        listaAdmin.appendChild(li);
+    });
+}
+
+// Chama a função ao carregar a página
+document.addEventListener("DOMContentLoaded", renderizarListaSoftwares);
+    
+    // EVENTO ÚNICO PARA INTERAÇÕES COM BOTÕES
+    if (listaAdmin) {
+        listaAdmin.addEventListener("click", (e) => {
+            const target = e.target;
+            const index = parseInt(target.dataset.index);
+    
+            if (target.classList.contains("excluir")) {
+                const confirmacao = confirm("Tem certeza que deseja excluir este software?");
+                if (confirmacao) {
+                    excluirSoftware(index);
+                }
+            }
+    
+            if (target.classList.contains("editar")) {
+                window.location.href = `admin-cadastro.html?editar=${index}`;
+            }
+    
+            if (target.classList.contains("indisponivel")) {
+                marcarIndisponivel(index);
+            }
+        });
     }
+    
+    function marcarIndisponivel(index) {
+        softwares[index].indisponivel = !softwares[index].indisponivel;
+        localStorage.setItem("softwares", JSON.stringify(softwares));
+        renderizarListaSoftwares(); // RE-RENDERIZA
+    }
+    
+    function excluirSoftware(index) {
+        softwares.splice(index, 1);
+        localStorage.setItem("softwares", JSON.stringify(softwares));
+        renderizarListaSoftwares();
+    }
+    
+    // INICIALIZA A LISTA
+    renderizarListaSoftwares();
+    
+
+
+
     
     // cadastro e edição de software
     if (softwareForm) {
@@ -204,11 +219,6 @@ document.addEventListener("DOMContentLoaded", () => {
             atualizarLista(); // função para atualizar
         });
     }
-    professores.push({ nome, escola });
-    localStorage.setItem("professores", JSON.stringify(professores));
-
-    mensagem.innerText = "Professor cadastrado com sucesso!";
-    professorForm.reset();
 });
 
 // exibir lista de softwares na página admin-lista.html
@@ -232,6 +242,7 @@ document.addEventListener("DOMContentLoaded", () => {
 //solicitações de software(página do admin)
     const solicitacoes = JSON.parse(localStorage.getItem("solicitacoes")) || [];
     const tabelaSolicitacoes = document.getElementById("lista-solicitacoes");
+    
 
     if (tabelaSolicitacoes) {
         if (solicitacoes.length === 0) { //se n tiver dados mostra uma mensagem 
@@ -259,12 +270,43 @@ document.addEventListener("DOMContentLoaded", () => {
             const btnAlterar = linha.querySelector(".alterar");
             const btnExcluir = linha.querySelector(".excluir");
 
-            btnAprovar.addEventListener("click", () => {//aprova a solicitação do software 
+            if (solicitacao.status === "aprovado") {
                 btnAprovar.disabled = true;
                 btnAprovar.textContent = "Aprovado";
                 linha.style.backgroundColor = "#d4edda";
+            }
+            btnAprovar.addEventListener("click", () => {
+                // Recupera todas as solicitações
+                let solicitacoesAtualizadas = JSON.parse(localStorage.getItem("solicitacoes")) || [];
+            
+                // Encontra o item atual usando alguma chave única — pode ser o nome do software, data, professor, etc.
+                // Neste exemplo, vamos filtrar pelo trio software+professor+laboratório
+                const solicitacaoIndex = solicitacoesAtualizadas.findIndex(s =>
+                    s.software === solicitacao.software &&
+                    s.professor === solicitacao.professor &&
+                    s.laboratorio === solicitacao.laboratorio &&
+                    s.data === solicitacao.data
+                );
+            
+                if (solicitacaoIndex !== -1) {
+                    const solicitacaoAprovada = solicitacoesAtualizadas[solicitacaoIndex];
+                    solicitacaoAprovada.status = "aprovado";
+            
+                    // Salva no localStorage para a página do professor ver depois
+                    let laboratorioData = JSON.parse(localStorage.getItem("laboratorioData")) || [];
+                    laboratorioData.push(solicitacaoAprovada);
+                    localStorage.setItem("laboratorioData", JSON.stringify(laboratorioData));
+            
+                    // Remove da lista de solicitações
+                    solicitacoesAtualizadas.splice(solicitacaoIndex, 1);
+                    localStorage.setItem("solicitacoes", JSON.stringify(solicitacoesAtualizadas));
+            
+                    // Remove do DOM
+                    linha.remove();
+                }
             });
-
+            
+            
             btnAlterar.addEventListener("click", () => { //modifica o nome do software
                 const novoSoftware = prompt("Editar nome do software:", solicitacao.software);
                 if (novoSoftware !== null) {
@@ -284,6 +326,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             tabelaSolicitacoes.appendChild(linha);
         });
+
+        
     }
 }
 
@@ -320,11 +364,13 @@ document.addEventListener("DOMContentLoaded", () => {
         professorSelect.appendChild(optionDefault);
     }
 } else {
-    console.error('O professor não foi encontrado.');
+    // console.error('O professor não foi encontrado.');
+
 }
 
 
     // Preenche o select de software sem duplicar
+    const softwareSelect = document.getElementById("softwareSelect");
     if (softwareSelect) {
         softwareSelect.innerHTML = ""; // Limpa para evitar duplicações
 
@@ -337,6 +383,7 @@ document.addEventListener("DOMContentLoaded", () => {
 }
 
     // exibir lista de professores na página admin-lista.html
+    const listaProfessores = document.getElementById("listaProfessores");
 
     if (listaProfessores) {
     listaProfessores.innerHTML = '';
@@ -397,16 +444,43 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("softwares", JSON.stringify(softwares));
         location.reload();
     }
-    //confirmação de uso de software
+    
+    
+    }
+
+//confirmação de uso de software
+function carregarConfirmacoesProfessor() {
+    const listaConfirmacao = document.getElementById("lista-confirmacao");
+    if (!listaConfirmacao) return;
+
+    listaConfirmacao.innerHTML = ''; // Limpa a lista
+
+    const solicitacoes = JSON.parse(localStorage.getItem("solicitacoes")) || [];
+    const solicitacoesAprovadas = solicitacoes.filter(s => s.status === "aprovado");
+
+    solicitacoesAprovadas.forEach((solicitacao, index) => {
+        const div = document.createElement("div");
+        div.className = "solicitacao-item";
+        div.style.border = "1px solid #ccc";
+        div.style.padding = "10px";
+        div.style.marginBottom = "10px";
+        div.style.borderRadius = "8px";
+        div.style.backgroundColor = solicitacao.confirmado ? "#d4edda" : "#f8f9fa";
+
+        div.innerHTML = `
+            <strong>Professor:</strong> ${solicitacao.professor} <br>
+            <strong>Software:</strong> ${solicitacao.software} <br>
+            <strong>Laboratório:</strong> ${solicitacao.laboratorio} <br>
+            <strong>Data:</strong> ${solicitacao.data} <br><br>
+            <button onclick="confirmarUso(${index})" ${solicitacao.confirmado ? "disabled" : ""}>
+                ${solicitacao.confirmado ? "Uso Confirmado" : "Confirmar Uso"}
+            </button>
+        `;
+
+        listaConfirmacao.appendChild(div);
+    });
+
     
 }
 
-    // área de login
-    function acessarComo(perfil) {
-        if (perfil === 'professor') {
-            window.location.href = 'professor.html';
-        } else if (perfil === 'admin') {
-            window.location.href = 'admin.html';
-        }
-}
 
