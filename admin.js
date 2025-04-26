@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", renderizarListaSoftwares);
 
 
 
-    
+  
     // cadastro e edição de software
     if (softwareForm) {
         softwareForm.addEventListener("submit", (e) => {
@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", renderizarListaSoftwares);
             localStorage.setItem("softwares", JSON.stringify(softwares));
             softwareForm.reset();
     });
-    
+
     // verifica se a página tem parâmetro para editar e preenche o formulário
     const params = new URLSearchParams(window.location.search);
     if (params.has("editar")) {
@@ -155,35 +155,6 @@ document.addEventListener("DOMContentLoaded", renderizarListaSoftwares);
         }
 
     }
-
-    // solicitação de instalação
-    if (solicitacaoForm) {
-        solicitacaoForm.addEventListener("submit", (e) => {
-            e.preventDefault();
-
-            const professor = document.getElementById("professor").value;
-            const software = document.getElementById("software").value;
-            const laboratorio = document.getElementById("laboratorio").value;
-            const data = document.getElementById("data").value;
-
-            const novaSolicitacao = { professor, software, laboratorio, data };
-
-            // recupera solicitações anteriores (ou array vazio)
-            const solicitacoes = JSON.parse(localStorage.getItem("solicitacoes")) || [];
-
-            // adiciona a nova
-            solicitacoes.push(novaSolicitacao);
-
-            // salva de volta
-            localStorage.setItem("solicitacoes", JSON.stringify(solicitacoes));
-
-            console.log("Solicitação registrada:", novaSolicitacao);
-            document.getElementById("mensagem-solicitacao").innerText = "Solicitação registrada com sucesso!";
-            solicitacaoForm.reset();
-        });
-        
-    }
-
 
     // cadastro de Professor
     if (professorForm) {
@@ -276,11 +247,8 @@ document.addEventListener("DOMContentLoaded", renderizarListaSoftwares);
                 linha.style.backgroundColor = "#d4edda";
             }
             btnAprovar.addEventListener("click", () => {
-                // Recupera todas as solicitações
                 let solicitacoesAtualizadas = JSON.parse(localStorage.getItem("solicitacoes")) || [];
-            
-                // Encontra o item atual usando alguma chave única — pode ser o nome do software, data, professor, etc.
-                // Neste exemplo, vamos filtrar pelo trio software+professor+laboratório
+                
                 const solicitacaoIndex = solicitacoesAtualizadas.findIndex(s =>
                     s.software === solicitacao.software &&
                     s.professor === solicitacao.professor &&
@@ -297,6 +265,19 @@ document.addEventListener("DOMContentLoaded", renderizarListaSoftwares);
                     laboratorioData.push(solicitacaoAprovada);
                     localStorage.setItem("laboratorioData", JSON.stringify(laboratorioData));
             
+                    // Aqui adiciona o software aprovado ao professor
+                    const professores = JSON.parse(localStorage.getItem("professores")) || [];
+                    const professor = professores.find(p => p.nome === solicitacao.professor);
+                    
+                    if (professor) {
+                        // Adiciona o software aprovado ao array de softwares do professor
+                        if (!professor.softwares) {
+                            professor.softwares = [];
+                        }
+                        professor.softwares.push(solicitacaoAprovada.software);
+                        localStorage.setItem("professores", JSON.stringify(professores));
+                    }
+            
                     // Remove da lista de solicitações
                     solicitacoesAtualizadas.splice(solicitacaoIndex, 1);
                     localStorage.setItem("solicitacoes", JSON.stringify(solicitacoesAtualizadas));
@@ -305,6 +286,8 @@ document.addEventListener("DOMContentLoaded", renderizarListaSoftwares);
                     linha.remove();
                 }
             });
+            
+            
             
             
             btnAlterar.addEventListener("click", () => { //modifica o nome do software
@@ -330,7 +313,6 @@ document.addEventListener("DOMContentLoaded", renderizarListaSoftwares);
         
     }
 }
-
 
 // seleciona o elemento select
     const professorSelect = document.getElementById("professor");
@@ -448,6 +430,8 @@ document.addEventListener("DOMContentLoaded", renderizarListaSoftwares);
     
     }
 
+
+
 //confirmação de uso de software
 function carregarConfirmacoesProfessor() {
     const listaConfirmacao = document.getElementById("lista-confirmacao");
@@ -478,9 +462,12 @@ function carregarConfirmacoesProfessor() {
         `;
 
         listaConfirmacao.appendChild(div);
+
+        
     });
 
     
+
+
+    
 }
-
-
